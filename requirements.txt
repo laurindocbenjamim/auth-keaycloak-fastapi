@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+fastapi-keycloak-middleware
+python-multipart
+python-jose[cryptography]
+requests
