@@ -39,6 +39,6 @@ services:
       KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: myrealm
       KEYCLOAK_CLIENT_ID: elinara-client
-      KEYCLOAK_CLIENT_SECRET: XDYcuV8anl0y95bC5zXHWa53HdPoTxlO
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     depends_on:
       - keycloak
