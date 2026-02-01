@@ -149,11 +149,22 @@ Keycloak is an **Identity as a Service (IDaaS)** provider. It handles the entire
   sudo docker-compose up -d
   ```
 
-### 4. Backend can't connect to Keycloak
-- **Cause**: The FastAPI app starts faster than Keycloak and fails the OIDC discovery.
-- **Solution**: The `docker-compose.yml` uses `depends_on`, but since Keycloak is slow, the backend might restart a few times. This is normal; it will eventually connect once Keycloak is fully up.
+### 4. Error 500: "Realm does not exist" (404)
+- **Cause**: The backend is searching for a realm that has a typo (case-sensitive!) or doesn't exist.
+- **Solution**: Ensure your realm name in Keycloak matches the `KEYCLOAK_REALM` environment variable exactly (e.g., `elinara-realm`).
 
-### 5. Social Login button not appearing
-- **Cause**: Redirect URIs or Client Scopes are misconfigured in the Admin Console.
-- **Solution**: Ensure your "Valid Redirect URIs" in the Client settings include `*` (for dev) or your actual frontend URL.
+### 5. Error 500: Internal Server Error (Networking)
+- **Cause**: The Backend uses internal Docker names (`http://keycloak:8080`), but tokens are issued for `localhost:8080`, or the backend can't reach the Keycloak container.
+- **Solution**: 
+  - Set `KEYCLOAK_URL: http://keycloak:8080` in `docker-compose.yml` for the backend.
+  - Set `KC_HOSTNAME_URL: http://localhost:8080` for Keycloak to fix the `iss` (issuer) claim mismatch.
+
+### 6. Error: "Account is not fully set up" (during token retrieval)
+- **Cause**: Required actions (Verify Email, Update Password) are pending for the user.
+- **Solution**: In Keycloak Admin, go to the user's profile and **REMOVE** all entries in the **Required Actions** list.
+
+### 7. Issue: Social Login button or Authorization failing
+- **Cause**: Enabling the "Authorization" toggle in Client settings adds complex requirements.
+- **Solution**: Keep **Authorization: OFF** and **Client Authentication: ON**.
+
 

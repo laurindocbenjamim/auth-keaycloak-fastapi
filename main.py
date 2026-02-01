@@ -17,9 +17,10 @@ app.add_middleware(
 # Keycloak Configuration from environment variables
 # Note: In a real scenario, these would point to your Keycloak instance.
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
-REALM = os.getenv("KEYCLOAK_REALM", "myrealm")
-CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "fastapi-client")
+REALM = os.getenv("KEYCLOAK_REALM", "elinara-realm")
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "elinara-client")
 CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "your-client-secret")
+
 
 keycloak_config = KeycloakConfiguration(
     url=KEYCLOAK_URL, # Uses the full URL from environment
