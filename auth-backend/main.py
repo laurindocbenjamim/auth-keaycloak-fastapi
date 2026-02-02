@@ -5,42 +5,44 @@ from fastapi_keycloak_middleware import KeycloakConfiguration, KeycloakMiddlewar
 
 app = FastAPI(title="FastAPI Keycloak Integration")
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust this for production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # Keycloak Configuration from environment variables
-# Note: In a real scenario, these would point to your Keycloak instance.
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
 REALM = os.getenv("KEYCLOAK_REALM", "elinara-realm")
 CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "elinara-client")
 CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET", "your-client-secret")
 
-
 keycloak_config = KeycloakConfiguration(
-    url=KEYCLOAK_URL, # Uses the full URL from environment
+    url=KEYCLOAK_URL,
     realm=REALM,
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
-
-
     claims_mapper={
         "sub": "user_id",
         "name": "full_name",
         "email": "email",
         "preferred_username": "username",
         "realm_access": "roles",
-        "phone_number": "phone_number"
+        "phone_number": "phone_number",
+        "address": "address"
     }
 )
 
-# Initialize Middleware
+# Initialize Keycloak Middleware first so CORS can wrap it
 setup_keycloak_middleware(app, keycloak_config)
+
+# Configure CORS last so it's the outermost middleware (added last = executed first)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():

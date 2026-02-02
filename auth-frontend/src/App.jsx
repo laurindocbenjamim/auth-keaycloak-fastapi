@@ -9,23 +9,45 @@ const App = () => {
     const [loading, setLoading] = useState(false);
     const [initError, setInitError] = useState(null);
 
+    const [initTimeout, setInitTimeout] = useState(false);
+
+    // Initialization Timeout
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!initialized) {
+                setInitTimeout(true);
+            }
+        }, 8000); // 8 seconds
+        return () => clearTimeout(timer);
+    }, [initialized]);
+
     // Listen for Keycloak errors
     React.useEffect(() => {
         if (initialized && !keycloak.authenticated && window.location.hash.includes('error=')) {
-            setInitError("Authentication error detected in URL. Check Keycloak logs.");
+            setInitError("Authentication error detected in URL. Please check Keycloak logs.");
         }
     }, [initialized, keycloak.authenticated]);
 
-    if (initError) {
+    if (initError || (initTimeout && !initialized)) {
         return (
             <div className="loading" style={{ flexDirection: 'column', textAlign: 'center', padding: '2rem' }}>
-                <p style={{ color: '#f87171', fontSize: '1.5rem', fontWeight: 'bold' }}>Initialization Issue</p>
-                <p style={{ fontSize: '1.1rem', color: '#94a3b8', marginTop: '1rem', maxWidth: '400px' }}>
-                    {initError}
+                <p style={{ color: '#f87171', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                    {initError ? "Initialization Issue" : "Taking longer than usual..."}
                 </p>
-                <button onClick={() => window.location.reload()} className="btn-secondary" style={{ marginTop: '2rem' }}>
-                    Try Again
-                </button>
+                <p style={{ fontSize: '1.1rem', color: '#94a3b8', marginTop: '1rem', maxWidth: '450px' }}>
+                    {initError || "Keycloak is taking too long to respond. This usually happens due to a network timeout or a misconfigured 'Web Origin' in Keycloak Client settings."}
+                </p>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                    <button onClick={() => window.location.reload()} className="btn-secondary">
+                        Retry Refresh
+                    </button>
+                    <button onClick={() => window.location.href = window.location.origin} className="btn-outline">
+                        Go to Home
+                    </button>
+                </div>
+                <p style={{ marginTop: '2rem', fontSize: '0.9rem', opacity: 0.7 }}>
+                    Check F12 Console for detailed errors.
+                </p>
             </div>
         );
     }
@@ -95,12 +117,23 @@ const App = () => {
                                 <p>{keycloak.tokenParsed?.email || 'N/A'}</p>
                             </div>
                             <div className="info-group">
-                                <label>Phone Number</label>
-                                <p>{keycloak.tokenParsed?.phone_number || 'Not provided'}</p>
+                                <label>Phone Detail</label>
+                                <p>
+                                    {keycloak.tokenParsed?.country_code ? `(${keycloak.tokenParsed.country_code}) ` : ''}
+                                    {keycloak.tokenParsed?.phone_number || 'No number'}
+                                </p>
                             </div>
                             <div className="info-group">
                                 <label>Full Name</label>
                                 <p>{keycloak.tokenParsed?.name || 'N/A'}</p>
+                            </div>
+                            <div className="info-group">
+                                <label>Address</label>
+                                <p>
+                                    {typeof keycloak.tokenParsed?.address === 'object'
+                                        ? (keycloak.tokenParsed.address.formatted || JSON.stringify(keycloak.tokenParsed.address))
+                                        : (keycloak.tokenParsed?.address || 'No address')}
+                                </p>
                             </div>
                         </div>
                         <div className="api-test">

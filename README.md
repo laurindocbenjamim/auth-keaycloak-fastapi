@@ -62,3 +62,110 @@ This error happens because the Redirect URI in your **Google Cloud Console** doe
 4. **Save** and wait 1-2 minutes for Google to update.
 
 ---
+
+### 🌍 Adding a Country Code Selector (Keycloak 24)
+To let users select their country code from a dropdown:
+
+1.  In Keycloak Admin, go to **Realm Settings** -> **User Profile**.
+2.  Switch to the **JSON Editor** tab.
+3.  Add this new attribute to the `attributes` array (or merge it with your `phone_number`):
+
+4.  **Full Reference (Nesting)**:
+    Ensure you add it inside the `attributes: [...]` array. It should look like this:
+
+```json
+{
+  "attributes": [
+    { "name": "username", ... },
+    { "name": "email", ... },
+    {
+      "name": "country_code",
+      "displayName": "Country Code",
+      "annotations": {
+        "inputType": "select",
+        "inputOptionLabels": {
+          "US": "+1 (USA)",
+          "AO": "+244 (Angola)",
+          "MZ": "+258 (Mozambique)",
+          "PT": "+351 (Portugal)",
+          "BR": "+55 (Brazil)",
+          "ZA": "+27 (South Africa)"
+        }
+      },
+      "validations": {
+        "options": {
+          "options": ["US", "AO", "MZ", "PT", "BR", "ZA"]
+        }
+      },
+      "permissions": {
+        "view": ["user", "admin"],
+        "edit": ["user", "admin"]
+      }
+    }
+  ]
+}
+---
+
+## 🛠️ Common Integration Pitfalls & Solutions
+
+| Issue | Cause | Fix |
+| :--- | :--- | :--- |
+| **401 Unauthorized** | Client set to "Confidential" | In Keycloak, set **Client Authentication** to **OFF** for the frontend client. |
+| **CORS Error** | Backend blocks frontend origin | Add `http://localhost:3000` to `allow_origins` in `auth-backend/main.py`. |
+| **Initializing... Hang** | Web Origins missing | Add `http://localhost:3000` to **Web Origins** in Keycloak Client settings. |
+| **Invalid Realm** | Realm name mismatch | Ensure `VITE_KEYCLOAK_REALM` in `.env` matches exact Keycloak name. |
+
+---
+
+## 📍 Social Login: Map Phone & Address (Google)
+
+To get data like Phone Number and Address from Google login:
+
+1.  **Google Cloud Console**:
+    *   **CRITICAL**: Go to **APIs & Services** -> **Library** and search for **"Google People API"**. Click **Enable**. (Sem isto, os escopos de telefone/morada darão erro).
+    *   In your **OAuth consent screen**, add these **EXACT** scopes manually (use the "Add Scope" or "Paste Scopes" box):
+        *   `https://www.googleapis.com/auth/user.phonenumbers.read`
+        *   `https://www.googleapis.com/auth/user.addresses.read`
+2.  **Keycloak Identity Provider Configuration**:
+    *   Go to **Identity Providers** -> **Google**.
+    *   In the **Mappers** tab, create two new mappers:
+        *   **Mapper 1 (Phone)**: 
+            *   Name: `google-phone`
+            *   Mapper Type: `Attribute Importer`
+            *   Social Claim: `phone_number`
+            *   User Attribute Name: `phone_number`
+        *   **Mapper 2 (Address)**: 
+            *   Name: `google-address`
+            *   Mapper Type: `Attribute Importer`
+            *   Social Claim: `address`
+            *   User Attribute Name: `address`
+3.  **Client Scopes**:
+    *   Ensure the `phone` and `address` scopes are in the **Default Client Scopes** of your `elinara-frontend` client.
+
+> [!NOTE]
+> Google only shares phone/address if the user has them set in their public profile and grants permission during login.
+### 🔗 Automatic Account Linking (Fix "Account already exists")
+If users see a "Review Profile" or "Account already exists" screen when logging in with Google, follow these steps:
+
+1.  **Trust Email**:
+    - Go to **Identity Providers** -> **Google**.
+    - Set **Trust Email** to **ON**. This tells Keycloak to trust that Google has verified the user's email.
+2.  **Authentication Flow**:
+    - Go to **Authentication** -> **Flows**.
+    - Select **First Broker Login** from the list.
+    - Find the step **Confirm Link Existing Account** and set it to **Disabled**.
+    - Find the step **Verify Existing Account by Email** and set it to **Disabled** (if you want fully automatic linking without an extra email loop).
+
+> [!CAUTION]
+> Disabling these checks assumes you trust your Identity Provider (Google) 100%. If an attacker compromises a Google account, they will have instant access to the linked Keycloak account without further verification.
+
+### 🔑 Fix "Update password" or "Required Action"
+If Keycloak asks the user to update their password after logging in via Google:
+
+1.  Go to **Users** -> Click on the specific user.
+2.  In the **Details** tab (or **User Profile**), find the **Required User Actions** field.
+3.  Click the **X** to remove **Update Password** (and **Verify Email** if present).
+4.  **Save** the changes.
+
+> [!TIP]
+> This happens if the user was created manually by an admin with the "Temporary" password flag set. Removing the action allows Google login to bypass the credential update screen.

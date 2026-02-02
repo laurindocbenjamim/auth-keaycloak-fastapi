@@ -10,8 +10,10 @@ const eventLogger = (event, error) => {
 };
 
 const tokenLogger = (tokens) => {
-    console.log('onKeycloakTokens', tokens);
+    // console.log('onKeycloakTokens', tokens); // Removed for security
 };
+
+const FullPageLoading = () => <div className="loading">Initializing Secure Session...</div>;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
@@ -21,7 +23,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             onTokens={tokenLogger}
             initOptions={{
                 onLoad: 'check-sso',
-                silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+                silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+                checkLoginIframe: false,
+                scope: 'openid profile email phone address'
             }}
         >
             <App />
