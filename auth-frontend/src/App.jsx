@@ -146,6 +146,13 @@ const App = () => {
                             </button>
                             <pre>{apiResult}</pre>
                         </div>
+
+                        <div className="debug-section" style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                            <h3 style={{ fontSize: '0.9rem', opacity: 0.6, marginBottom: '0.5rem' }}>Debug: Raw Token Data</h3>
+                            <pre style={{ fontSize: '0.75rem', maxHeight: '200px', overflow: 'auto', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
+                                {JSON.stringify(keycloak.tokenParsed, null, 2)}
+                            </pre>
+                        </div>
                     </div>
                 </main>
             )}
