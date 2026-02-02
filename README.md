@@ -4,48 +4,44 @@ This project is now structured to run the **Backend** and **Frontend** as comple
 
 ## Project Layout
 
-- `auth-backend/`: Contains the FastAPI application and the Keycloak/Postgres infrastructure.
-- `auth-frontend/`: Contains the premium React/Vite application.
+- `auth-backend/`: Modular FastAPI application (`app/` package).
+  - `app/api/`: API Routers (Auth, Users).
+  - `app/core/`: Configuration and Keycloak settings.
+  - `app/db/` & `app/models/`: SQLite storage logic.
+- `auth-frontend/`: Premium glassmorphism React/Vite dashboard.
 
 ---
 
 ## 1. Backend & Infrastructure (`auth-backend`)
 
-The backend folder contains the source of truth for your authentication.
+The backend follows a **Modular Architecture** for scalability.
 
 1. **Setup**:
    ```bash
    cd auth-backend
-   # Ensure .env exists with KEYCLOAK_CLIENT_SECRET
-   sudo docker-compose up -d
+   # Build and start services
+   sudo docker compose build --no-cache && sudo docker compose up -d
    ```
 2. **Access**:
    - Backend API: `http://localhost:8000`
    - Keycloak: `http://localhost:8080/admin`
+3. **User Management**:
+   The backend automatically synchronizes Keycloak users to a local SQLite database (`users.db`) via the `/users/sync` endpoint.
 
 ---
 
 ## 2. Frontend Application (`auth-frontend`)
 
-The frontend is a standalone Vite app that connects to the backend and Keycloak via environment variables.
+The frontend is a standalone Vite app with a modern **Glassmorphism Redesign**.
 
-1. **Configuration**:
-   Edit `auth-frontend/.env` to point to your hosted Backend and Keycloak URLs:
-   ```env
-   VITE_KEYCLOAK_URL=http://your-keycloak-host:8080
-   VITE_API_BASE_URL=http://your-backend-host:8000
-   ```
+- **User Directory**: View all synchronized users in a centralized table.
+- **Top Bar**: Personal navigation featuring user avatar and real-time identity data.
+- **Left Sidebar**: Ergonomic navigation menu.
 
-2. **Run with Docker**:
+1. **Local Development**:
    ```bash
    cd auth-frontend
-   sudo docker-compose up -d
-   ```
-3. **Run for Development**:
-   ```bash
-   cd auth-frontend
-   npm install
-   npm run dev
+   npm install && npm run dev
    ```
 
 ## Production Tips:
@@ -110,10 +106,12 @@ To let users select their country code from a dropdown:
 
 | Issue | Cause | Fix |
 | :--- | :--- | :--- |
-| **401 Unauthorized** | Client set to "Confidential" | In Keycloak, set **Client Authentication** to **OFF** for the frontend client. |
-| **CORS Error** | Backend blocks frontend origin | Add `http://localhost:3000` to `allow_origins` in `auth-backend/main.py`. |
-| **Initializing... Hang** | Web Origins missing | Add `http://localhost:3000` to **Web Origins** in Keycloak Client settings. |
-| **Invalid Realm** | Realm name mismatch | Ensure `VITE_KEYCLOAK_REALM` in `.env` matches exact Keycloak name. |
+| **Backend 404** | Route mismatch | Use `/protected` for testing gateway connectivity. |
+| **Import Error** | Deep relative imports | Use `...` to reference the root in modular structures. |
+| **Missing Phone/Addr** | Client ID mismatch | Add mappers specifically to `elinara-frontend` client. |
+| **Keycloak WARN** | XA Recovery disabled | Set `KC_TRANSACTION_MANAGER_ENABLE_RECOVERY=true`. |
+| **401 Unauthorized** | Client Authentication ON | Set **Client Authentication** to **OFF** for frontend client. |
+| **CORS Error** | Origin mismatch | Update `allow_origins` in `app/main.py`. |
 
 ---
 
