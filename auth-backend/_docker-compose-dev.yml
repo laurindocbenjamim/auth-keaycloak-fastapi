@@ -9,13 +9,15 @@ services:
       KC_DB_URL: jdbc:postgresql://dpg-d5uvmrp4tr6s739aoqfg-a/elinaradb
       KC_DB_USERNAME: root
       KC_DB_PASSWORD: t9rNDtYlDvyOd3pSZDK4vY7s58eDHYXd
-      KC_HOSTNAME_URL: https://keycloak-deploy-datatuning-auth.onrender.com
+      # In production, change this to your actual Keycloak domain
+      #KC_HOSTNAME_URL: http://localhost:8080
+      KC_HOSTNAME_URL: keycloak-deploy-datatuning-auth.onrender.com
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
-      # Remova o port mapping se não for acessar externamente
-      # Ou use apenas para health check interno
-      # ports:  # Remova ou comente para produção
-      #   - "8080:8080"
+      KC_TRANSACTION_MANAGER_ENABLE_RECOVERY: "true"
+      QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: "true"
+    ports:
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -37,8 +39,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      # Garanta que estas variáveis estão sendo usadas pelo código
-      KEYCLOAK_SERVER_URL: https://keycloak-deploy-datatuning-auth.onrender.com
+      # If Keycloak is on another host, use that URL here
+      KEYCLOAK_URL: https://keycloak-deploy-datatuning-auth.onrender.com
       KEYCLOAK_REALM: elinara-realm
       KEYCLOAK_CLIENT_ID: elinara-client
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
