@@ -115,7 +115,7 @@ docker cp auth-keaycloak-fastapi-keycloak-1:/tmp/export/elinara-realm-realm.json
    ```env
    KEYCLOAK_URL=https://elinara-keycloak.onrender.com
    KEYCLOAK_REALM=elinara-realm
-   KEYCLOAK_CLIENT_ID=elinara-client
+   KEYCLOAK_CLIENT_ID=elinara-backend
    KEYCLOAK_CLIENT_SECRET=<your-client-secret-from-keycloak>
    ```
 3. **Save** (triggers redeploy)
@@ -145,7 +145,7 @@ In production Keycloak Admin Console:
    - Web Origins: `https://<your-frontend-url>`
    - Admin URL: `https://<your-frontend-url>`
 
-3. **Clients** → **elinara-client** (backend)
+3. **Clients** → **elinara-backend** (backend)
 4. **Credentials tab** → **Copy Client Secret**
 5. **Update backend environment variable** with this secret
 

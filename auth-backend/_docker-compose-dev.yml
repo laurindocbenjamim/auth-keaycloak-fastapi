@@ -42,7 +42,7 @@ services:
       # If Keycloak is on another host, use that URL here
       KEYCLOAK_URL: https://keycloak-deploy-datatuning-auth.onrender.com
       KEYCLOAK_REALM: elinara-realm
-      KEYCLOAK_CLIENT_ID: elinara-client
+      KEYCLOAK_CLIENT_ID: elinara-backend
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     env_file:
       - .env

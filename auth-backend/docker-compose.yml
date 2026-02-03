@@ -40,7 +40,7 @@ services:
       # Garanta que estas variáveis estão sendo usadas pelo código
       KEYCLOAK_SERVER_URL: https://keycloak-deploy-datatuning-auth.onrender.com
       KEYCLOAK_REALM: elinara-realm
-      KEYCLOAK_CLIENT_ID: elinara-client
+      KEYCLOAK_CLIENT_ID: elinara-backend
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     env_file:
       - .env

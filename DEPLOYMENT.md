@@ -15,7 +15,7 @@ This guide explains how to deploy the Frontend and Backend as separate apps on [
     Add the following in the **Environment** tab:
     - `KEYCLOAK_URL`: Your Keycloak URL (e.g., `https://your-keycloak.onrender.com`)
     - `KEYCLOAK_REALM`: `elinara-realm`
-    - `KEYCLOAK_CLIENT_ID`: `elinara-client`
+    - `KEYCLOAK_CLIENT_ID`: `elinara-backend`
     - `KEYCLOAK_CLIENT_SECRET`: `[Your Secret]`
 
 ---

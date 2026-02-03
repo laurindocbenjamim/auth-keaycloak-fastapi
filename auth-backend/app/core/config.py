@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     # Keycloak Configuration
     KEYCLOAK_URL: str = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
     KEYCLOAK_REALM: str = os.getenv("KEYCLOAK_REALM", "elinara-realm")
-    KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "elinara-client")
+    KEYCLOAK_CLIENT_ID: str = os.getenv("KEYCLOAK_CLIENT_ID", "elinara-backend")
     KEYCLOAK_CLIENT_SECRET: str = os.getenv("KEYCLOAK_CLIENT_SECRET", "your-client-secret")
 
     # Metadata for Keycloak claims mapping

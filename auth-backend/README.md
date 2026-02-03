@@ -22,7 +22,7 @@ This project provides a FastAPI backend integrated with Keycloak for Authenticat
    - Access the admin console at `http://localhost:8080/auth/admin` (User: `admin`, Pass: `admin`).
    - Create a Realm named `elinara-realm`.
    - Create a Client:
-     - **Client ID**: `elinara-client` (The unique identifier for your app).
+     - **Client ID**: `elinara-backend` (The unique identifier for your app).
      - **Client Authentication**: Set to **ON** (In Step 2: Capability config). This is the equivalent of "Access Type: Confidential".
      - **Authentication Flow**: Ensure **Standard Flow** is checked.
      - **Valid Redirect URIs**: `*` (Allows Keycloak to redirect back to your app after login).
