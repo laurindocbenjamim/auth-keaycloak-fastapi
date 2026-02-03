@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse  # Adicione esta linha
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_keycloak_middleware import setup_keycloak_middleware
 from .core.config import settings
@@ -17,7 +18,7 @@ setup_keycloak_middleware(app, settings.keycloak_config)
 # CORS Middleware (Outermost)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, set this to specific frontend URL
+    allow_origins=["*"],  # In production, set this to specific frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,4 +34,4 @@ async def root():
 
 @app.get("/welcome")
 async def welcome():
-    return HTMLResponse("<h1>Welcome to {settings.PROJECT_NAME}</h1>")
+    return HTMLResponse(f"<h1>Welcome to {settings.PROJECT_NAME}</h1>")  # Corrija o f-string

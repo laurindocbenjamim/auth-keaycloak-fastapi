@@ -23,8 +23,9 @@ class Settings(BaseSettings):
     }
 
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
-
+    #DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:////tmp/app.db")
+    
     @property
     def keycloak_config(self) -> KeycloakConfiguration:
         return KeycloakConfiguration(
