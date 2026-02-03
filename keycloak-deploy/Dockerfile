@@ -6,6 +6,10 @@ ENV KC_METRICS_ENABLED=true
 ENV KC_HTTP_ENABLED=true
 ENV KC_PROXY_HEADERS=xforwarded
 
+# --- ESTA É A LINHA QUE FALTA ---
+ENV KC_DB=postgres
+# --------------------------------
+
 # Build optimized Keycloak
 RUN /opt/keycloak/bin/kc.sh build
 
