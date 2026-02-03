@@ -6,7 +6,7 @@ import Keycloak from 'keycloak-js';
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'elinara-client',
 });*/
 const keycloak = new Keycloak({
-    url: 'https://elinara-authentication.onrender.com',
+    url: 'https://keycloak-deploy-datatuning-auth.onrender.com',
     realm: 'elinara-realm',
     clientId: 'elinara-frontend'
 });
