@@ -45,5 +45,7 @@ services:
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     env_file:
       - .env
+    volumes:
+      - ./data:/app/data
     depends_on:
       - keycloak

@@ -112,6 +112,7 @@ To let users select their country code from a dropdown:
 | **Keycloak WARN** | XA Recovery disabled | Set `KC_TRANSACTION_MANAGER_ENABLE_RECOVERY=true`. |
 | **401 Unauthorized** | Client Authentication ON | Set **Client Authentication** to **OFF** for frontend client. |
 | **CORS Error** | Origin mismatch | Update `allow_origins` in `app/main.py`. |
+| **OperationalError** | `users.db` created as folder | Run `sudo rm -rf auth-backend/users.db` and restart. |
 
 ---
 
@@ -139,6 +140,7 @@ To get data like Phone Number and Address from Google login:
             *   User Attribute Name: `address`
 3.  **Client Scopes**:
     *   Ensure the `phone` and `address` scopes are in the **Default Client Scopes** of your `elinara-frontend` client.
+    *   **CRITICAL**: Ensure the **Client Mappers** for your frontend client (under Client Scopes -> [client]-dedicated -> Mappers) include a mapper for **sub** (Token Claim Name: `sub` or `user_id`) and **email**. Without these, the local database synchronization will fail with a `401 Unauthorized`.
 
 > [!NOTE]
 > Google only shares phone/address if the user has them set in their public profile and grants permission during login.
@@ -167,3 +169,13 @@ If Keycloak asks the user to update their password after logging in via Google:
 
 > [!TIP]
 > This happens if the user was created manually by an admin with the "Temporary" password flag set. Removing the action allows Google login to bypass the credential update screen.
+
+## 🔮 Predicted Errors & Solutions
+
+| Error | Prediction | Fix |
+| :--- | :--- | :--- |
+| **AttributeError** | Missing Claim in Token | Ensure you've added the "User Attribute" mapper in the Keycloak Client Scopes for that specific field (e.g., `phone_number`). |
+| **NoneType Object** | Expired Token Session | If `user_info` is `None`, the user likely has an expired session. Refresh the dashboard or Sign Out and click "Sync" again. |
+| **ResponseValidationError** | Schema Constraint Violation | This happens if a field (like email) has an invalid format (e.g., "N/A" instead of a real email). Ensure fallbacks match Pydantic types. |
+| **ValidationError** | Schema Mismatch | If Pydantic throws a validation error on `/sync`, check `app/schemas/user.py` and ensure the types match what Keycloak sends (e.g., `str` vs `dict`). |
+| **Connection Timout** | Docker Network Lag | If Keycloak is slow to start, the backend might fail to connect. Always run `docker compose up -d` and wait for Keycloak to be Healthy. |
