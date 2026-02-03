@@ -31,6 +31,6 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 async def root():
     return {"message": f"Welcome to {settings.PROJECT_NAME}"}
 
-@app.get("welcome")
+@app.get("/welcome")
 async def welcome():
     return HTMLResponse("<h1>Welcome to {settings.PROJECT_NAME}</h1>")
