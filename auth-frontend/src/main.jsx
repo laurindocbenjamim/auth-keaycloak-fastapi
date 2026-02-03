@@ -25,7 +25,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 onLoad: 'check-sso',
                 silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
                 checkLoginIframe: false,
-                scope: 'openid profile email phone address'
+                scope: 'openid profile email phone address',
+                pkceMethod: 'S256'
             }}
         >
             <App />

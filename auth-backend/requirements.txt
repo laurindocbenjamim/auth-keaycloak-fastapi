@@ -4,3 +4,6 @@ fastapi-keycloak-middleware
 python-multipart
 python-jose[cryptography]
 requests
+sqlalchemy
+pydantic-settings
+email-validator
