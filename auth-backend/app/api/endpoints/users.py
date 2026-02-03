@@ -47,12 +47,21 @@ def sync_user(
     phone_number = manual_claims.get("phone_number") or getattr(user_info, "phone_number", None)
     addr = manual_claims.get("address") or getattr(user_info, "address", None)
 
+    # Role and Status Extraction
+    realm_access = manual_claims.get("realm_access", {})
+    token_roles = realm_access.get("roles", [])
+    user_role = "admin" if "admin" in token_roles else "user"
+    
+    # Status based on email verification
+    email_verified = manual_claims.get("email_verified", False)
+    user_status = "verified" if email_verified else "unverified"
+
     # 2. Re-check identity
     if not user_id:
         print(f"ERROR: Sync attempted but identity (sub) still missing. Claims: {manual_claims}")
         raise HTTPException(status_code=401, detail="User Identity missing from token.")
 
-    print(f"DEBUG: Syncing user {email or 'N/A'} (ID: {user_id})")
+    print(f"DEBUG: Syncing user {email or 'N/A'} (ID: {user_id}, Role: {user_role})")
     
     db_user = db.query(DBUser).filter(DBUser.user_id == user_id).first()
     
@@ -69,6 +78,8 @@ def sync_user(
         db_user.username = username
         db_user.phone_number = phone_number
         db_user.address = addr_str
+        db_user.role = user_role
+        db_user.status = user_status
     else:
         # Create new user
         db_user = DBUser(
@@ -77,7 +88,9 @@ def sync_user(
             full_name=full_name,
             username=username,
             phone_number=phone_number,
-            address=addr_str
+            address=addr_str,
+            role=user_role,
+            status=user_status
         )
         db.add(db_user)
     

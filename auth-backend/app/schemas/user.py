@@ -7,6 +7,8 @@ class UserBase(BaseModel):
     username: Optional[str] = None
     phone_number: Optional[str] = None
     address: Optional[str] = None
+    role: Optional[str] = "user"
+    status: Optional[str] = "unverified"
 
 class UserCreate(UserBase):
     user_id: str

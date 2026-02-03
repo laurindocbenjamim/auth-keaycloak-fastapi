@@ -60,6 +60,10 @@ const App = () => {
         }
     };
 
+    const handleLogout = () => {
+        keycloak.logout({ redirectUri: window.location.origin });
+    };
+
     if (!initialized) {
         return <div className="loading">Initializing Session...</div>;
     }
@@ -161,7 +165,7 @@ const App = () => {
                                 <button className="menu-item" title="Contact Admin">💌 {!isSidebarCollapsed && 'Contact Admin'}</button>
                             </nav>
 
-                            <button onClick={() => keycloak.logout()} className="menu-item btn-logout" title="Sign Out">
+                            <button onClick={handleLogout} className="menu-item btn-logout" title="Sign Out">
                                 ⎋ {!isSidebarCollapsed && 'Sign Out'}
                             </button>
                         </div>
@@ -194,7 +198,7 @@ const App = () => {
                                             ⚙️ Edit Settings
                                         </button>
                                         <div className="dropdown-divider"></div>
-                                        <button className="dropdown-item logout-item" onClick={() => keycloak.logout()}>
+                                        <button className="dropdown-item logout-item" onClick={handleLogout}>
                                             ⎋ Sign Out
                                         </button>
                                     </div>
@@ -233,6 +237,16 @@ const App = () => {
                                         </button>
                                         <pre>{apiResult || '// API response will appear here after verification'}</pre>
                                     </div>
+
+                                    {/* Admin Debug Section moved to Overview */}
+                                    {keycloak.tokenParsed?.realm_access?.roles?.includes('admin') && (
+                                        <div className="debug-section" style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+                                            <h3 style={{ fontSize: '0.9rem', opacity: 0.8, marginBottom: '0.5rem', textTransform: 'uppercase', color: 'var(--primary-glow)' }}>🛡️ Admin Debug: Raw Token Data</h3>
+                                            <pre style={{ fontSize: '0.75rem', maxHeight: '250px', overflowY: 'auto', background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px' }}>
+                                                {JSON.stringify(keycloak.tokenParsed, null, 2)}
+                                            </pre>
+                                        </div>
+                                    )}
                                 </section>
                             )}
 
@@ -278,6 +292,8 @@ const App = () => {
                                                     <tr>
                                                         <th>Name</th>
                                                         <th>Email</th>
+                                                        <th>Role</th>
+                                                        <th>Status</th>
                                                         <th>Phone</th>
                                                         <th>Address</th>
                                                     </tr>
@@ -287,12 +303,22 @@ const App = () => {
                                                         <tr key={u.user_id}>
                                                             <td style={{ fontWeight: 600 }}>{u.full_name}</td>
                                                             <td>{u.email}</td>
+                                                            <td>
+                                                                <span className={`status-badge ${u.role === 'admin' ? 'status-active' : 'status-pending'}`} style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem' }}>
+                                                                    {u.role?.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span className={`status-badge status-${u.status}`} style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem' }}>
+                                                                    {u.status?.toUpperCase()}
+                                                                </span>
+                                                            </td>
                                                             <td>{u.phone_number || '-'}</td>
                                                             <td>{u.address || '-'}</td>
                                                         </tr>
                                                     ))}
                                                     {users.length === 0 && (
-                                                        <tr><td colSpan="4" style={{ textAlign: 'center' }}>No users synchronized yet.</td></tr>
+                                                        <tr><td colSpan="6" style={{ textAlign: 'center' }}>No users synchronized yet.</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
@@ -321,13 +347,7 @@ const App = () => {
                                 </section>
                             )}
 
-                            {/* Debugger persistent at bottom */}
-                            <div className="debug-section" style={{ marginTop: 'auto', opacity: 0.5 }}>
-                                <h3 style={{ fontSize: '0.75rem', opacity: 0.6, marginBottom: '0.5rem', textTransform: 'uppercase' }}>System Debug: Raw Token Data</h3>
-                                <pre style={{ fontSize: '0.7rem', maxHeight: '150px' }}>
-                                    {JSON.stringify(keycloak.tokenParsed, null, 2)}
-                                </pre>
-                            </div>
+                            {/* Debug section removed from persistent footer, moved to Overview (Admin Only) */}
                         </main>
                     </div>
                 </div>

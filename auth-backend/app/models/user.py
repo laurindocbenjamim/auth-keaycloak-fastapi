@@ -11,3 +11,5 @@ class User(Base):
     username = Column(String)
     phone_number = Column(String, nullable=True)
     address = Column(String, nullable=True)
+    role = Column(String, default="user")
+    status = Column(String, default="unverified")
