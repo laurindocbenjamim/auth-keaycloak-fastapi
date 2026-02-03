@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     }
 
     # Database
-    DATABASE_URL: str = "sqlite:///./data/users.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
 
     @property
     def keycloak_config(self) -> KeycloakConfiguration:
